@@ -38,6 +38,7 @@
         element.css('display', 'block');
         var url = scope.pdfUrl;
         var httpHeaders = scope.httpHeaders;
+        var data = scope.pdfData;
         var pdfDoc = null;
         var pageToDisplay = isFinite(attrs.page) ? parseInt(attrs.page) : 1;
         var pageFit = attrs.scale === 'page-fit';
@@ -155,16 +156,24 @@
         function renderPDF() {
           clearCanvas();
 
-          var params = {
-            'url': url,
-            'withCredentials': creds
-          };
+          var params;
+
+          if (data) {
+            params = {
+              'data': data
+            };
+          } else {
+            params = {
+              'url': url,
+              'withCredentials': creds
+            };
+          }
 
           if (httpHeaders) {
             params.httpHeaders = httpHeaders;
           }
 
-          if (url && url.length) {
+          if ((url && url.length) || data) {
             pdfLoaderTask = PDFJS.getDocument(params, null, null, scope.onProgress);
             pdfLoaderTask.then(
                 function(_pdfDoc) {
